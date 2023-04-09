@@ -12,25 +12,33 @@ class CustomQueue {
     public void get(){
         try{
             consumerSemaphore.acquire();
+            System.out.println("+++ consumerSemaphore.acquire()");
+            Thread.sleep(1000);
         } catch(InterruptedException e) {
             System.out.println("Exception: " + e);
         }
 
-        System.out.println("Consumed item: " + item);
+        System.out.println("Consumer consumed item: " + item);
 
         producerSemaphore.release();
+        System.out.println("--- producerSemaphore.release()");
+        
     }
 
     public void put(int item){
         try{
             producerSemaphore.acquire();
+            System.out.println("+++ producerSemaphore.acquire()");
+            Thread.sleep(1000);
         } catch(InterruptedException e ){
             System.out.println("Exception: " + e);
         }
 
         this.item = item;
-        System.out.println("Produced item: " + item);
+        System.out.println("Producer produced item: " + item);
+
         consumerSemaphore.release();
+        System.out.println("--- consumerSemaphore.release()");
     }
 }
 
@@ -40,13 +48,15 @@ class Consumer implements Runnable {
 		this.myQueue = myQueue;
 	}
     public void run(){
-        while(true){
+        int i=0;
+        while(i < 5){
             myQueue.get();
             try{
                 Thread.sleep(1000);
             } catch(InterruptedException e){
                 System.out.println("Exception: " + e);
             }
+            i++;
         }
     }
 }
@@ -59,7 +69,8 @@ class Producer implements Runnable {
 	}
 
 	public void run() {
-		while (true) {
+        int i=0;
+		while (i < 5) {
 			Random random = new Random();
 			int data = random.nextInt(100);
 			// producer put items
@@ -69,6 +80,7 @@ class Producer implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+            i++;
 		}
 	}
 }
@@ -78,16 +90,14 @@ class ProducerAndConsumerTest {
 	public static void main(String[] args) {
 		// creating buffer queue
         CustomQueue myQueue = new CustomQueue();
-       
-        Producer producer = new Producer(myQueue);
-        Consumer consumer = new Consumer(myQueue);
+
+        Producer producer = new Producer(myQueue); 
+        Consumer consumer = new Consumer(myQueue); 
+
         Thread producerThread = new Thread(producer);
-        
-        // starting producer thread
         producerThread.start();
         
         Thread consumerThread = new Thread(consumer);
-        // starting consumer thread
         consumerThread.start();
 	}
 
