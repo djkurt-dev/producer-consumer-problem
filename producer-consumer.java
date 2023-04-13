@@ -44,9 +44,11 @@ class CustomQueue {
 
 class Consumer implements Runnable {
     private CustomQueue myQueue;
+
     Consumer(CustomQueue myQueue) {
 		this.myQueue = myQueue;
 	}
+
     public void run(){
         int i=0;
         while(i < 5){
@@ -89,16 +91,18 @@ class ProducerAndConsumerTest {
 
 	public static void main(String[] args) {
 		// creating buffer queue
-        CustomQueue myQueue = new CustomQueue();
+        CustomQueue myQueue = new CustomQueue(); // buffer
 
         Producer producer = new Producer(myQueue); 
-        Consumer consumer = new Consumer(myQueue); 
+        Consumer consumer = new Consumer(myQueue);        
 
         Thread producerThread = new Thread(producer);
         producerThread.start();
+        System.out.println("Producer started");
         
         Thread consumerThread = new Thread(consumer);
         consumerThread.start();
+        System.out.println("Consumer started");
 	}
 
 }
